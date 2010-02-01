@@ -3,6 +3,7 @@ import Qt 4.6
 Item { id: wrapper
 	property var contactListModel: clModel
 	property var messageListModel: msgListModel
+	property var photoListModel: pListModel
 	property var sid
 	//profile data
 	property var profileId
@@ -13,6 +14,7 @@ Item { id: wrapper
 	signal loaded
 	signal messageAdded
 	signal logout
+	signal photos
 
 	function loadProfile () {
 		var doc = new XMLHttpRequest();
@@ -63,7 +65,7 @@ Item { id: wrapper
 				var newMessages = JSON.parse(doc.responseText);
 				var msgArray = newMessages.inbox.d;
 				var tmp = msgArray.pop(); //hack, vkontakte is very strange at times
-				wrapper.appendMessages(msgArray);				
+				wrapper.appendMessages(msgArray);
 				wrapper.markMessagesAsReaded();
 			}
 
@@ -175,12 +177,40 @@ Item { id: wrapper
 		doc.open("GET", requestUrl);
 		doc.send();
 	}
+	function getUserPhotos () {
+		var doc = new XMLHttpRequest();
+		doc.onreadystatechange = function() {
+			if (doc.readyState == XMLHttpRequest.DONE) {
+				var photos = JSON.parse(doc.responseText);
+				//console.log(photos);
+				//appendPhotos(); //WTF? It doesn't work(((
+				for (var i=0;i!=photos.length; i++) {
+					pListModel.append(
+					{
+						"itemid" : photos[i][0],
+						"previewPath" : photos[i][1],
+						"imagePath": photos[i][2]
+					}
+					);
+				}
+			}
+		}
+		var requestUrl = "http://userapi.com/data?act=photos&from=0&to=100000&id=" + pListModel.userid + "&sid=" + wrapper.sid;
+		console.log(">>Load photos \n" + requestUrl);
+		doc.open("GET", requestUrl);
+		doc.send();
+	}
+	function appendPhotos(items) {
 
+	}
 	MsgListModel {
 		id: msgListModel		
 	}
 	ContactListModel {
 		id: clModel
+	}
+	PhotoListModel {
+		id: pListModel
 	}
 	Timer{
 		interval: 6000

@@ -16,3 +16,7 @@ content/ContactListModel.qml
 content/MessageListDelegate.qml
 
 content/SearchBar.qml
+
+content/PhotoListModel.qml
+
+content/PhotoGridDelegate.qml

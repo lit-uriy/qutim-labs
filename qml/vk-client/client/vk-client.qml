@@ -99,7 +99,7 @@ Item {
 							left:parent.left
 							right:parent.right
 						}
-						height: (avatarBorder.y + avatarBorder.height + 15) //MEGAHACK
+						height: (avatar.y + avatar.height + 15) //MEGAHACK
 
 						Rectangle {
 							color: "black"
@@ -118,26 +118,26 @@ Item {
 							Image {
 								id: avatar
 								width: 32; height: 32
+								//fillMode:PreserveAspectCrop
 								source: imagePath
 								anchors.centerIn: parent
 							}
 
 							anchors.left: wrapper.left
 							anchors.leftMargin: 5
-							anchors.top: parent.top
-							anchors.topMargin: 15
+							anchors.verticalCenter: parent.verticalCenter
 						}
 
-//						Image {
-//							id: avatarBorder
-//							width: 48;
-//							height: 48;
-//							fillMode:Image.PreserveAspectFit
-//							source: imagePath
-//							anchors.left: wrapper.left
-//							anchors.leftMargin: 5
-//							anchors.verticalCenter: parent.verticalCenter
-//						}
+						//						Image {
+						//							id: avatarBorder
+						//							width: 48;
+						//							height: 48;
+						//							fillMode:Image.PreserveAspectFit
+						//							source: imagePath
+						//							anchors.left: wrapper.left
+						//							anchors.leftMargin: 5
+						//							anchors.verticalCenter: parent.verticalCenter
+						//						}
 						Text {
 							text: name
 							color: "white"
@@ -219,75 +219,123 @@ Item {
 					background.state = "";
 				}
 			}
-			Item {
-				id: chat
+			Flipable {
+				id: userSession
+				property int angle: 0
 				width: parent.width
 				x: (screen.width * 1.5)
 				anchors {
 					top: parent.top
 					bottom: parent.bottom
 				}
-				Vkontakte.MessageListDelegate {id: messageListDelegate}
-				ListView {
-					id: chatView;
-					model: chatProxyModel
-					delegate: messageListDelegate
-					width: parent.width
-					anchors.top: parent.top
-					anchors.bottom: messageInput.top
+				transform: Rotation {
+					id: rotation
+					//origin.x: (userSession.width/2); origin.y: (userSession.height/2)
+					axis.x: 0; axis.y: 1; axis.z: 0     // rotate around y-axis
+					angle: userSession.angle
 				}
-				Item {
-					id: messageInput
+				Vkontakte.MessageListDelegate {id: messageListDelegate}
+				Vkontakte.PhotoGridDelegate{id:photoDelegate}
+				front: Item {
+					id: chat
+					anchors.fill: parent.fill
 					width: parent.width
-					height: 150
-					Rectangle {
-						color: "black"
-						opacity: 0.5
-						anchors.fill: parent
+					height:parent.height
+					ListView {
+						id: chatView;
+						model: chatProxyModel
+						delegate: messageListDelegate
+						width: parent.width
+						anchors.top: parent.top
+						anchors.bottom: messageInput.top
 					}
-					anchors {
-						bottom: parent.bottom
-					}
-					Text {
-						id: msgInputTitle
-						text: qsTr("You message (ctrl+enter to send):")
-						font.bold: true; color: "White"
-						font.pixelSize: 12
-						anchors {
-							top: parent.top
-							topMargin: 5
-							left: parent.left
-							leftMargin: 15
-							right: parent.right
+					Item {
+						id: messageInput
+						width: parent.width
+						height: 150
+						Rectangle {
+							color: "black"
+							opacity: 0.5
+							anchors.fill: parent
 						}
-					}
-					TextEdit {
-						id: msgEditField
 						anchors {
-							top: msgInputTitle.bottom
-							left: msgInputTitle.left
-							right: msgInputTitle.right
 							bottom: parent.bottom
-							topMargin: 10
-							rightMargin: 15
 						}
-						focus: false
-						wrap: true
-						width:parent.width
-						text: ""
-						font.bold: true; color: "White"
-						font.pixelSize: 12
-						Keys.onPressed: {
-							//TODO normal scan code
-							if (event.key == 16777220) { //ololo Onotole otake
-								if (msgEditField.text != "") {
-									protocol.sendMessage(chatProxyModel.senderid,msgEditField.text);
-									msgEditField.text = "";
+						Text {
+							id: msgInputTitle
+							text: qsTr("You message (ctrl+enter to send):")
+							font.bold: true; color: "White"
+							font.pixelSize: 12
+							anchors {
+								top: parent.top
+								topMargin: 5
+								left: parent.left
+								leftMargin: 15
+								right: parent.right
+							}
+						}
+						TextEdit {
+							id: msgEditField
+							anchors {
+								top: msgInputTitle.bottom
+								left: msgInputTitle.left
+								right: msgInputTitle.right
+								bottom: parent.bottom
+								topMargin: 10
+								rightMargin: 15
+							}
+							focus: false
+							wrap: true
+							width:parent.width
+							text: ""
+							font.bold: true; color: "White"
+							font.pixelSize: 12
+							Keys.onPressed: {
+								//TODO normal scan code
+								if (event.key == 16777220) { //ololo Onotole otake
+									if (msgEditField.text != "") {
+										protocol.sendMessage(chatProxyModel.senderid,msgEditField.text);
+										msgEditField.text = "";
+									}
 								}
 							}
 						}
 					}
 				}
+				back: Item {
+					id:photos
+					anchors {
+						top: parent.top
+						bottom: parent.bottom
+						left: parent.left
+						right:parent.right
+					}
+					GridView {
+						id: photoGridView; model: protocol.photoListModel;
+						delegate: photoDelegate; cacheBuffer: 100
+						cellWidth: 120; cellHeight: 120;
+						anchors {
+							top: parent.top
+							bottom: parent.bottom
+							left: parent.left
+							right:parent.right
+							rightMargin: 20
+							leftMargin: 20
+						}
+					}
+				}
+				states: [
+					State {
+						name: "showPhoto"
+						PropertyChanges { target: userSession; angle: 180 }
+						PropertyChanges { target: showPhotosBtn; opacity: 0 }
+						PropertyChanges { target: backPhotosBtn; opacity: 1 }
+						PropertyChanges { target: sendBtn; opacity: 0 }
+					}
+				]
+				transitions: [
+					Transition { NumberAnimation { matchProperties: "angle"; duration: 1000; easing: "easeInOutQuad" } }
+				]
 			}
 			Connection {
 				sender: protocol
@@ -357,7 +405,49 @@ Item {
 				}
 
 			}
+			Vkontakte.Button {
+				id: showPhotosBtn
+				text: qsTr("Show photos")
+				opacity: 0
 
+				anchors.right: parent.right
+				anchors.top: parent.top
+				anchors.bottom: parent.bottom
+				anchors.rightMargin: 3
+				anchors.topMargin: 3
+				anchors.bottomMargin: 3
+
+				textMargin: 20
+				onClicked: {
+					protocol.photoListModel.clear();
+					protocol.photoListModel.userid = chatProxyModel.senderid;
+					protocol.getUserPhotos();
+					//hack
+					rotation.origin.x = screen.width/2;
+					rotation.origin.y = screen.height/2;
+					userSession.state = "showPhoto";
+				}
+			}
+			Vkontakte.Button {
+				id: backPhotosBtn
+				text: qsTr("Back")
+				opacity: 0
+
+				anchors.right: parent.right
+				anchors.top: parent.top
+				anchors.bottom: parent.bottom
+				anchors.rightMargin: 3
+				anchors.topMargin: 3
+				anchors.bottomMargin: 3
+
+				textMargin: 20
+				onClicked: {
+					//hack
+					rotation.origin.x = screen.width/2;
+					rotation.origin.y = screen.height/2;
+					userSession.state = "";					
+				}
+			}
 		}
 		Vkontakte.ToolBar {
 			id: toolBar
@@ -422,6 +512,7 @@ Item {
 				onClicked: {
 					console.log("unread count: " + protocol.messageListModel.unreadMessagesCount);
 					chatProxyModel.senderid = 0;
+					protocol.photoListModel.clear();
 				}
 
 			}
@@ -456,45 +547,46 @@ Item {
 				PropertyChanges { target: toolBar; opacity: 0; height: 0}
 				PropertyChanges {target: userSearch; state:"hide"}
 				},
-			State {
-				name: "chat"; when: chatProxyModel.senderid != 0
-				PropertyChanges {target: mainView; x: -1.5*screen.width;}
-				PropertyChanges {target: chat; x:0;}
-				PropertyChanges {target: backBtn; opacity:1}
-				PropertyChanges {target: logoutBtn; opacity:0}
-				PropertyChanges {target: sendBtn; opacity:1}
-				PropertyChanges {target: searchBtn; opacity:0}
-				PropertyChanges {target: userSearch; state:"hide"}
-				PropertyChanges {target: msgEditField;focus: true}
-				PropertyChanges {target: headerMsg;text: qsTr("Chat with ") + chatProxyModel.sendername}
-				},
-			State {
-				name: "haveUnreadMessages"; when: (protocol.messageListModel.unreadMessagesCount>0)
-				PropertyChanges {target: markBtn; opacity:1;}
-				PropertyChanges {target: mainView; x: -1.5*screen.width;opacity:0}
-				PropertyChanges {target: clProxyView; x:0;opacity:1}
-				PropertyChanges {target: headerMsg;text: qsTr("Unread Messages from:")}
-				PropertyChanges {target: searchBtn; opacity:0}
-				PropertyChanges {target: userSearch; state:"hide"}
-				StateChangeScript {
-					script: {
-						clProxyModel.clear();
-						for (var i = 0;i!=protocol.messageListModel.count;i++) {
-							var item = protocol.messageListModel.get(i);
-							if (item.unread && (clProxyModel.indexOf(item.senderid) == -1)) {
-								var index = protocol.contactListModel.indexOf(item.senderid);
-								clProxyModel.addItem(index);
+				State {
+					name: "chat"; when: chatProxyModel.senderid != 0
+					PropertyChanges {target: mainView; x: -1.5*screen.width;}
+					PropertyChanges {target: userSession; x:0;}
+					PropertyChanges {target: backBtn; opacity:1}
+					PropertyChanges {target: logoutBtn; opacity:0}
+					PropertyChanges {target: sendBtn; opacity:1}
+					PropertyChanges {target: searchBtn; opacity:0}
+					PropertyChanges {target: userSearch; state:"hide"}
+					PropertyChanges {target: msgEditField;focus: true}
+					PropertyChanges {target: headerMsg;text: qsTr("Chat with ") + chatProxyModel.sendername}
+					PropertyChanges {target: showPhotosBtn; opacity:1;}
+					},
+					State {
+						name: "haveUnreadMessages"; when: (protocol.messageListModel.unreadMessagesCount>0)
+						PropertyChanges {target: markBtn; opacity:1;}
+						PropertyChanges {target: mainView; x: -1.5*screen.width;opacity:0}
+						PropertyChanges {target: clProxyView; x:0;opacity:1}
+						PropertyChanges {target: headerMsg;text: qsTr("Unread Messages from:")}
+						PropertyChanges {target: searchBtn; opacity:0}
+						PropertyChanges {target: userSearch; state:"hide"}
+						StateChangeScript {
+							script: {
+								clProxyModel.clear();
+								for (var i = 0;i!=protocol.messageListModel.count;i++) {
+									var item = protocol.messageListModel.get(i);
+									if (item.unread && (clProxyModel.indexOf(item.senderid) == -1)) {
+										var index = protocol.contactListModel.indexOf(item.senderid);
+										clProxyModel.addItem(index);
+									}
+								}
 							}
 						}
-					}
-				}
-			},
-			State {
-				name: "search";
-				PropertyChanges {target: mainView; x: -1.5*screen.width;opacity:0}
-				PropertyChanges {target: clProxyView; x:0;opacity:1}
-				PropertyChanges {target: headerMsg;text: qsTr("Looking for ") + userSearch.text}
-			}
+						},
+						State {
+							name: "search";
+							PropertyChanges {target: mainView; x: -1.5*screen.width;opacity:0}
+							PropertyChanges {target: clProxyView; x:0;opacity:1}
+							PropertyChanges {target: headerMsg;text: qsTr("Looking for ") + userSearch.text}
+						}
 		]
 		transitions: [
 			Transition { NumberAnimation { matchProperties: "x,opacity,height"; duration: 500; easing: "easeInOutQuad" } }
