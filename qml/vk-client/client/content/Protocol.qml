@@ -11,7 +11,8 @@ Item { id: wrapper
 	property var activity
 	property var imagePath
 	signal loaded
-	signal messageAdded()
+	signal messageAdded
+	signal logout
 
 	function loadProfile () {
 		var doc = new XMLHttpRequest();
@@ -31,12 +32,11 @@ Item { id: wrapper
 		doc.open("GET", requestUrl);
 		doc.send();
 	}
-	function logout () {
+	function doLogout () {
 		var doc = new XMLHttpRequest();
 		var requestUrl = "http://login.userapi.com/auth?​login=logout&site=2&​sid=" + wrapper.sid;
 		doc.open("GET", requestUrl);
 		doc.send();
-		lastActivityChecker.running = false;
 	}
 	function checkForNewMessages () {
 		var doc = new XMLHttpRequest();
@@ -76,17 +76,21 @@ Item { id: wrapper
 	function appendMessages (msgArray) {
 		for (var i = 0;i!=msgArray.lenght;i++) {
 			msgListModel.readedMessages = msgListModel.readedMessages + msgArray[i][0] + "_";
-			var message = 			{
-				"input" : true,
-				"senderid": msgArray[i][3][0],
-				"time": msgArray[i][1],
-				"imagePath": msgArray[i][3][2],
-				"unread": true,
-				"messageText": msgArray[i][2][0],
-				"name": msgArray[i][3][1]
-			};
-			msgListModel.append (message);
-			wrapper.messageAdded();
+			console.log("Append messagy with id " + msgArray[i][0] + " " + msgListModel.indexOf(msgArray[i][0]) );
+			if (msgListModel.indexOf(msgArray[i][0]) == -1) {
+				var message = 			{
+					"msgId" : msgArray[i][0],
+					"input" : true,
+					"senderid": msgArray[i][3][0],
+					"time": msgArray[i][1],
+					"imagePath": msgArray[i][3][2],
+					"unread": true,
+					"messageText": msgArray[i][2][0],
+					"name": msgArray[i][3][1]
+				};
+				msgListModel.append (message);
+				wrapper.messageAdded();
+			}
 		}		
 	}
 	function getContactList() {
@@ -182,16 +186,27 @@ Item { id: wrapper
 		interval: 6000
 		running: false
 		repeat: true
+		id:newMessagesChecker
 		onTriggered: {
 			wrapper.checkForNewMessages();
 		}
-		id:lastActivityChecker
+	}
+	Timer{
+		interval: 90000
+		running: false
+		repeat:true
+		id: contactListUpdater
+		onTriggered: {
+			wrapper.getContactList();
+		}
+
 	}
 	onLoaded: {
 		console.log("Loaded");
 		msgListModel.clear();
 		//wrapper.checkForNewMessages();
-		lastActivityChecker.running = true;
+		newMessagesChecker.running = true;
+		contactListUpdater.running = true; //ugly method
 	}
 	onMessageAdded: {
 		console.log(">>Readed messages: " + msgListModel.readedMessages);
@@ -204,5 +219,9 @@ Item { id: wrapper
 		}
 		//		var unreadMessagesCount = (clModel.get(index).haveUnreadMessages + 1);
 		//		clModel.set(index,"haveUnreadMessages", unreadMessagesCount);
+	}
+	onLogout: {
+		newMessagesChecker.running = false;
+		contactListUpdater.running = false;
 	}
 }

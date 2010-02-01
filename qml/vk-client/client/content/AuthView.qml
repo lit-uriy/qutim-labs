@@ -28,6 +28,7 @@ Item {
 					font.bold: true
 					color: "#151515"; selectionColor: "green"
 					KeyNavigation.down: passIn
+					Keys.onReturnPressed: {passIn.focus = true;} //navigation on enter, a little bycicle
 					focus: true
 				}
 			}
@@ -54,6 +55,7 @@ Item {
 					color: "#151515"; selectionColor: "green"
 					KeyNavigation.down: loginBtn
 					KeyNavigation.up: emailIn
+					Keys.onReturnPressed: {loginBtn.focus = true;} //navigation on enter, a little bycicle
 				}
 			}
 		}

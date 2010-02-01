@@ -32,21 +32,36 @@ Component {
 
 			anchors.left: wrapper.left
 			anchors.leftMargin: 5
-			anchors.verticalCenter: parent.verticalCenter
+			anchors.top: parent.top
+			anchors.topMargin: 15
 		}
 		Text {
-			id: body
-			text: (name + "<br />" + messageText)
-			color: "white"
+			id: title
+			text: name
 			font.bold: true
-			wrap: true
 			style: "Raised"; styleColor: "black"
-
+			color: "white"
 			anchors.left: avatarBorder.right
 			anchors.leftMargin: 10
-			anchors.top: avatarBorder.top
 			anchors.right: parent.right
 			anchors.rightMargin: 10
+			anchors.top: avatarBorder.top
+
+		}
+		TextEdit {
+			id: body
+			width: parent.width
+			text: messageText
+			color: "white"
+			font.bold: true
+			readOnly: true
+			wrap: true
+			//style: "Raised"; styleColor: "black"
+
+			anchors.left: title.left
+			anchors.top: title.bottom
+			anchors.topMargin: 10
+			anchors.right: title.right
 		}
 	}
 }

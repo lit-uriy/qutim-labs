@@ -25,7 +25,6 @@ Item {
 		Vkontakte.ContactListModel {
 			id: clProxyModel
 			function addItem (index) {
-				//HACK
 				if (index == -1) {
 					return;
 				}
@@ -94,13 +93,13 @@ Item {
 				Component {
 					id: contactListDelegate
 					Item {
-						property var statuses : [qsTr("offline"),qsTr("onlile")]
+						property var statuses : [qsTr("offline"),qsTr("online")]
 						id: wrapper;
 						anchors {
 							left:parent.left
 							right:parent.right
 						}
-						height: (avatar.y + avatar.height + 15) //MEGAHACK
+						height: (avatarBorder.y + avatarBorder.height + 15) //MEGAHACK
 
 						Rectangle {
 							color: "black"
@@ -119,15 +118,26 @@ Item {
 							Image {
 								id: avatar
 								width: 32; height: 32
-								fillMode:PreserveAspectCrop
 								source: imagePath
 								anchors.centerIn: parent
 							}
 
 							anchors.left: wrapper.left
 							anchors.leftMargin: 5
-							anchors.verticalCenter: parent.verticalCenter
+							anchors.top: parent.top
+							anchors.topMargin: 15
 						}
+
+//						Image {
+//							id: avatarBorder
+//							width: 48;
+//							height: 48;
+//							fillMode:Image.PreserveAspectFit
+//							source: imagePath
+//							anchors.left: wrapper.left
+//							anchors.leftMargin: 5
+//							anchors.verticalCenter: parent.verticalCenter
+//						}
 						Text {
 							text: name
 							color: "white"
@@ -259,12 +269,16 @@ Item {
 							right: msgInputTitle.right
 							bottom: parent.bottom
 							topMargin: 10
+							rightMargin: 15
 						}
 						focus: false
+						wrap: true
+						width:parent.width
 						text: ""
 						font.bold: true; color: "White"
 						font.pixelSize: 12
 						Keys.onPressed: {
+							//TODO normal scan code
 							if (event.key == 16777220) { //ololo Onotole otake
 								if (msgEditField.text != "") {
 									protocol.sendMessage(chatProxyModel.senderid,msgEditField.text);
@@ -368,7 +382,7 @@ Item {
 				textMargin: 20
 				onClicked: {
 					authView.sid="";
-					protocol.logout();
+					protocol.doLogout();
 				}
 
 			}

@@ -4,7 +4,7 @@ content/AuthView.qml
 
 content/Protocol.qml
 
-content/ContactListDelegate.qml
+
 content/Button.qml
 
 content/ToolBar.qml

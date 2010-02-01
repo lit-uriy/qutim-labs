@@ -6,7 +6,7 @@
  </data>
  <data>
   <variable>RunConfiguration0-mainscript</variable>
-  <value type="QString"></value>
+  <value type="QString">&lt;Текущий файл></value>
  </data>
  <data>
   <variable>RunConfiguration0-qmlviewer</variable>
