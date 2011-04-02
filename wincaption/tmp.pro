@@ -12,7 +12,8 @@ HEADERS += \
     qtwin.h \
     qtdwm_p.h \
     qtdwm.h \
-    toolframewindow.h
+    toolframewindow.h \
+    toolframewindow_p.h
 FORMS += \
     Form.ui
 LIBS += -lgdi32
