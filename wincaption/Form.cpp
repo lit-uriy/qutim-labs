@@ -2,13 +2,14 @@
 #include "ui_Form.h"
 #include <qt_windows.h>
 #include <qtwin.h>
+#include <QToolButton>
 
 Form::Form(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Form)
 {
 	ui->setupUi(this);
-	ui->toolButton->winId();
+	QToolButton *btn = new QToolButton(this);
 
 	learnThemeParams();
 
@@ -22,11 +23,11 @@ Form::Form(QWidget *parent) :
 	QtWin::extendFrameIntoClientArea(this,
 									 winVerBorder_,
 									 winHorBorder_,
-									 qMax(winCaption_, ui->toolButton->height()),
+									 qMax(winCaption_, btn->height()),
 									 winHorBorder_);
 
 	ui->gridLayout->setContentsMargins(winVerBorder_, 0, winVerBorder_, winHorBorder_);
-	ui->horizontalLayout->setContentsMargins(winHorBorder_, 1, 0, 0);
+	//ui->horizontalLayout->setContentsMargins(winHorBorder_, 1, 0, 0);
 }
 
 //void Form::setWindowThemeAtributes(QWidget *w)

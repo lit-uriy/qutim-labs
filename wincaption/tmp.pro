@@ -5,12 +5,14 @@ TEMPLATE = app
 SOURCES += main.cpp \
     Form.cpp \
     qtwin.cpp \
-    qtdwm.cpp
+    qtdwm.cpp \
+    toolframewindow.cpp
 HEADERS += \
     Form.h \
     qtwin.h \
     qtdwm_p.h \
-    qtdwm.h
+    qtdwm.h \
+    toolframewindow.h
 FORMS += \
     Form.ui
 LIBS += -lgdi32

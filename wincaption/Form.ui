@@ -18,63 +18,6 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QToolButton" name="toolButton">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/applications-internet.png</normaloff>:/applications-internet.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="toolButton_2">
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/applications-multimedia.png</normaloff>:/applications-multimedia.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
       <widget class="QWidget" name="widget" native="true">
@@ -154,9 +97,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>commandLinkButton</sender>
