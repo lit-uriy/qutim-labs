@@ -1,6 +1,5 @@
 #include "toolframewindow.h"
 #include "toolframewindow_p.h"
-#include "qtwin.h"
 #include <QLibrary>
 #include <QToolButton>
 
@@ -21,18 +20,16 @@ ToolFrameWindow::ToolFrameWindow() :
 	//setAutoFillBackground(true);
 
 	//QtWin::extendFrameIntoClientArea(this);
-	QtWin::extendFrameIntoClientArea(this, d->verticalBorder,
-									 d->verticalBorder,
-									 d->captionHeight,
-									 d->horizontalBorder);
-
 	d->vLayout = new QVBoxLayout(this);
-	d->hLayout = new QHBoxLayout(this);
+	d->hLayout = new QHBoxLayout();
 	d->vLayout->addLayout(d->hLayout);
+
 	d->hLayout->addSpacerItem(new QSpacerItem(10, d->captionHeight, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
 	d->vLayout->setContentsMargins(d->verticalBorder, 0, d->verticalBorder, d->horizontalBorder);
 	d->hLayout->setSpacing(0);
+	d->vLayout->setSpacing(0);
+	d->_q_do_layout();
 }
 
 ToolFrameWindow::~ToolFrameWindow()
@@ -47,6 +44,7 @@ void ToolFrameWindow::addAction(QAction *action)
 	QToolButton *btn = new QToolButton(this);
 	btn->setDefaultAction(action);
 	btn->setAutoRaise(true);
+	btn->setIconSize(QSize(32,32));
 	addWidget(btn);
 }
 
@@ -59,6 +57,7 @@ void ToolFrameWindow::addWidget(QWidget *widget)
 {
 	Q_D(ToolFrameWindow);
 	d->hLayout->insertWidget(d->hLayout->count() - 1, widget);
+	d->_q_do_layout();
 }
 
 void ToolFrameWindow::setCentralWidget(QWidget *widget)

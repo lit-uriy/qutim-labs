@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <qt_windows.h>
 #include <QPointer>
+#include "qtwin.h"
 
 class ToolFrameWindow;
 class ToolFrameWindowPrivate
@@ -59,6 +60,14 @@ public:
 		msg;
 		*result = 0;
 		return true;
+	}
+	void _q_do_layout()
+	{
+		int height = qMax(captionHeight, hLayout->sizeHint().height());
+		QtWin::extendFrameIntoClientArea(q_func(), verticalBorder,
+										 verticalBorder,
+										 height,
+										 horizontalBorder);
 	}
 	ToolFrameWindow *q_ptr;
 	QPointer<QWidget> centralWidget;
