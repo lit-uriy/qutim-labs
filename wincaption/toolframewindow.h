@@ -19,11 +19,15 @@ public:
 	void addAction(QAction *action);
 	void removeAction(QAction *action);
 	void addWidget(QWidget *widget);
+	void removeWidget(QWidget *widget);
 	void setCentralWidget(QWidget *widget);
+	void setIconSize(const QSize &size);
+	QSize iconSize() const;
 protected:
 	bool winEvent(MSG *message, long *result);
 private:
 	QScopedPointer<ToolFrameWindowPrivate> d_ptr;
+	Q_PRIVATE_SLOT(d_func(), void _q_do_layout())
 };
 
 

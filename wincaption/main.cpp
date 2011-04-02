@@ -21,11 +21,17 @@ int main(int argc, char **argv)
 	QTabBar bar;
 	bar.addTab(QObject::tr("My super tab"));
 	bar.addTab(QObject::tr("Another tab"));
+	bar.setTabsClosable(true);
+	bar.setMovable(true);
 
 	w.addAction(&action);
 	w.addAction(&action2);
 	w.addWidget(&bar);
 	w.setCentralWidget(&form);
+
+	w.setIconSize(QSize(32,32));
+
 	w.show();
+	w.resize(600,400);
 	return ap.exec();
 }

@@ -1,7 +1,7 @@
 #include "toolframewindow.h"
 #include "toolframewindow_p.h"
 #include <QLibrary>
-#include <QToolButton>
+#include <QStyle>
 
 typedef HRESULT (WINAPI * DwmDefWindowProc_t)(HWND, UINT, WPARAM, LPARAM, long*);
 DwmDefWindowProc_t dwmDefWindowProc = 0;
@@ -9,12 +9,15 @@ DwmDefWindowProc_t dwmDefWindowProc = 0;
 ToolFrameWindow::ToolFrameWindow() :
 	d_ptr(new ToolFrameWindowPrivate(this))
 {
+	Q_D(ToolFrameWindow);
 	if (!dwmDefWindowProc) {
 		QLibrary dwmapi("dwmapi");
 		dwmDefWindowProc = reinterpret_cast<DwmDefWindowProc_t>(dwmapi.resolve("DwmDefWindowProc"));
 	}
-	Q_D(ToolFrameWindow);
 	d->loadThemeParams();
+
+	int size = style()->pixelMetric(QStyle::PM_SmallIconSize);
+	d->iconSize = QSize(size, size);
 
 	//setAttribute(Qt::WA_TranslucentBackground);
 	//setAutoFillBackground(true);
@@ -44,20 +47,32 @@ void ToolFrameWindow::addAction(QAction *action)
 	QToolButton *btn = new QToolButton(this);
 	btn->setDefaultAction(action);
 	btn->setAutoRaise(true);
-	btn->setIconSize(QSize(32,32));
+	btn->setIconSize(d->iconSize);
+	d->buttonHash.insert(action, btn);
 	addWidget(btn);
+}
+
+void ToolFrameWindow::removeWidget(QWidget *widget)
+{
+	Q_D(ToolFrameWindow);
+	d->hLayout->removeWidget(widget);
+	d->_q_do_layout();
 }
 
 void ToolFrameWindow::removeAction(QAction *action)
 {
+	Q_D(ToolFrameWindow);
 	QWidget::removeAction(action);
+	d->buttonHash.take(action)->deleteLater();
+	d->_q_do_layout();
 }
 
 void ToolFrameWindow::addWidget(QWidget *widget)
 {
 	Q_D(ToolFrameWindow);
-	d->hLayout->insertWidget(d->hLayout->count() - 1, widget);
+	d->hLayout->insertWidget(d->hLayout->count() - 1, widget, 0, Qt::AlignBottom);
 	d->_q_do_layout();
+	connect(widget, SIGNAL(destroyed()), this, SLOT(_q_do_layout()));
 }
 
 void ToolFrameWindow::setCentralWidget(QWidget *widget)
@@ -66,7 +81,21 @@ void ToolFrameWindow::setCentralWidget(QWidget *widget)
 	if (d->centralWidget)
 		layout()->removeWidget(d->centralWidget);
 	d->centralWidget = widget;
+	d->centralWidget->winId();
 	layout()->addWidget(widget);
+	d->_q_do_layout();
+}
+
+void ToolFrameWindow::setIconSize(const QSize &size)
+{
+	Q_D(ToolFrameWindow);
+	d->iconSize = size;
+	d->updateButtons();
+}
+
+QSize ToolFrameWindow::iconSize() const
+{
+	return d_func()->iconSize;
 }
 
 bool ToolFrameWindow::winEvent(MSG *msg, long *result)
@@ -74,11 +103,12 @@ bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 	//return QWidget::winEvent(msg, result); //Viv почему кнопки не жмакаются?
 	Q_D(ToolFrameWindow);
 	if (!QtWin::isCompositionEnabled())
-		return false;
+		return QWidget::winEvent(msg, result);
+
 	if (dwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
 		return true;
-	switch (msg->message)
-	{
+
+	switch (msg->message) {
 	case WM_SHOWWINDOW: {
 		RECT rc;
 		GetWindowRect(winId(), &rc);
@@ -99,3 +129,5 @@ bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 		return false;
 	}
 }
+
+#include "moc_toolframewindow.cpp"

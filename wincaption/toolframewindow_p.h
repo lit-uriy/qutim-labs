@@ -5,7 +5,11 @@
 #include <qt_windows.h>
 #include <QPointer>
 #include "qtwin.h"
+#include <QHash>
+#include <QToolButton>
+#include <QTimer>
 
+class QAction;
 class ToolFrameWindow;
 class ToolFrameWindowPrivate
 {
@@ -57,9 +61,16 @@ public:
 	}
 	bool nativeNcCalcSize(MSG *msg, long *result)
 	{
-		msg;
+		//msg;
 		*result = 0;
 		return true;
+	}
+	void updateButtons()
+	{
+		foreach (QToolButton *btn, buttonHash) {
+			btn->setIconSize(iconSize);
+		}
+		QTimer::singleShot(0, q_func(), SLOT(_q_do_layout()));
 	}
 	void _q_do_layout()
 	{
@@ -69,6 +80,7 @@ public:
 										 height,
 										 horizontalBorder);
 	}
+
 	ToolFrameWindow *q_ptr;
 	QPointer<QWidget> centralWidget;
 	int horizontalBorder;
@@ -76,6 +88,8 @@ public:
 	int captionHeight;
 	QVBoxLayout *vLayout;
 	QHBoxLayout *hLayout;
+	QSize iconSize;
+	QHash<QAction*, QToolButton*> buttonHash;
 };
 
 

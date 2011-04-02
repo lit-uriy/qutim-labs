@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>627</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,7 +70,7 @@
         <item>
          <widget class="QCommandLinkButton" name="commandLinkButton">
           <property name="text">
-           <string>Go out'a here.</string>
+           <string>Кнопочко</string>
           </property>
           <property name="description">
            <string>Exit на фиг.</string>
@@ -98,22 +98,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>commandLinkButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Form</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>199</x>
-     <y>204</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
