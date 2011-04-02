@@ -8,9 +8,9 @@ ToolFrameWindow::ToolFrameWindow() :
 	Q_D(ToolFrameWindow);
 	d->loadThemeParams();
 
-	setAttribute(Qt::WA_TranslucentBackground);
-	setAttribute(Qt::WA_TransparentForMouseEvents);
-	setAutoFillBackground(true);
+	//setAttribute(Qt::WA_TranslucentBackground);
+	//setAttribute(Qt::WA_TransparentForMouseEvents);
+	//setAutoFillBackground(true);
 
 	QtWin::extendFrameIntoClientArea(this, d->verticalBorder,
 									 d->verticalBorder,
