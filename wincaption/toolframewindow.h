@@ -18,7 +18,7 @@ public:
 	virtual ~ToolFrameWindow();
 	void addAction(QAction *action);
 	void removeAction(QAction *action);
-	QAction *addWidget(QWidget *widget);
+	void addWidget(QWidget *widget);
 	void setCentralWidget(QWidget *widget);
 protected:
 	bool winEvent(MSG *message, long *result);

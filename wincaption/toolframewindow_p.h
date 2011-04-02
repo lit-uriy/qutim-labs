@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <qt_windows.h>
+#include <QPointer>
 
 class ToolFrameWindow;
 class ToolFrameWindowPrivate
@@ -60,13 +61,13 @@ public:
 		return true;
 	}
 	ToolFrameWindow *q_ptr;
-	QWidget *centralWidget;
+	QPointer<QWidget> centralWidget;
 	int horizontalBorder;
 	int verticalBorder;
 	int captionHeight;
-
+	QVBoxLayout *vLayout;
+	QHBoxLayout *hLayout;
 };
-
 
 
 #endif // TOOLFRAMEWINDOW_P_H

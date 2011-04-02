@@ -2,26 +2,37 @@
 #include "toolframewindow_p.h"
 #include "qtwin.h"
 #include <QLibrary>
+#include <QToolButton>
 
 typedef HRESULT (WINAPI * DwmDefWindowProc_t)(HWND, UINT, WPARAM, LPARAM, long*);
-DwmDefWindowProc_t pDwmDefWindowProc = 0;
+DwmDefWindowProc_t dwmDefWindowProc = 0;
 
 ToolFrameWindow::ToolFrameWindow() :
 	d_ptr(new ToolFrameWindowPrivate(this))
 {
-	QLibrary dwmapi("dwmapi");
-	pDwmDefWindowProc             = reinterpret_cast<DwmDefWindowProc_t>(dwmapi.resolve("DwmDefWindowProc"));
+	if (!dwmDefWindowProc) {
+		QLibrary dwmapi("dwmapi");
+		dwmDefWindowProc = reinterpret_cast<DwmDefWindowProc_t>(dwmapi.resolve("DwmDefWindowProc"));
+	}
 	Q_D(ToolFrameWindow);
 	d->loadThemeParams();
 
 	//setAttribute(Qt::WA_TranslucentBackground);
-	//setAttribute(Qt::WA_TransparentForMouseEvents);
 	//setAutoFillBackground(true);
 
+	//QtWin::extendFrameIntoClientArea(this);
 	QtWin::extendFrameIntoClientArea(this, d->verticalBorder,
 									 d->verticalBorder,
-									 d->captionHeight + d->horizontalBorder,
+									 d->captionHeight,
 									 d->horizontalBorder);
+
+	d->vLayout = new QVBoxLayout(this);
+	d->hLayout = new QHBoxLayout(this);
+	d->vLayout->addLayout(d->hLayout);
+	d->hLayout->addSpacerItem(new QSpacerItem(10, d->captionHeight, QSizePolicy::Expanding, QSizePolicy::Fixed));
+
+	d->vLayout->setContentsMargins(d->verticalBorder, 0, d->verticalBorder, d->horizontalBorder);
+	d->hLayout->setSpacing(0);
 }
 
 ToolFrameWindow::~ToolFrameWindow()
@@ -31,7 +42,12 @@ ToolFrameWindow::~ToolFrameWindow()
 
 void ToolFrameWindow::addAction(QAction *action)
 {
+	Q_D(ToolFrameWindow);
 	QWidget::addAction(action);
+	QToolButton *btn = new QToolButton(this);
+	btn->setDefaultAction(action);
+	btn->setAutoRaise(true);
+	addWidget(btn);
 }
 
 void ToolFrameWindow::removeAction(QAction *action)
@@ -39,31 +55,32 @@ void ToolFrameWindow::removeAction(QAction *action)
 	QWidget::removeAction(action);
 }
 
-QAction *ToolFrameWindow::addWidget(QWidget *widget)
+void ToolFrameWindow::addWidget(QWidget *widget)
 {
-
+	Q_D(ToolFrameWindow);
+	d->hLayout->insertWidget(d->hLayout->count() - 1, widget);
 }
 
 void ToolFrameWindow::setCentralWidget(QWidget *widget)
 {
 	Q_D(ToolFrameWindow);
+	if (d->centralWidget)
+		layout()->removeWidget(d->centralWidget);
 	d->centralWidget = widget;
+	layout()->addWidget(widget);
 }
 
 bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 {
+	//return QWidget::winEvent(msg, result); //Viv почему кнопки не жмакаются?
 	Q_D(ToolFrameWindow);
 	if (!QtWin::isCompositionEnabled())
 		return false;
-	//DwmIsCompositionEnabled(&compositionEnabled);
-	//if (!compositionEnabled)
-	//return false;
-	if (pDwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
+	if (dwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
 		return true;
 	switch (msg->message)
 	{
-	case WM_SHOWWINDOW :
-	{
+	case WM_SHOWWINDOW: {
 		RECT rc;
 		GetWindowRect(winId(), &rc);
 		SetWindowPos(winId(),
