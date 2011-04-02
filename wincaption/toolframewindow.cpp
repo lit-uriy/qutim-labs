@@ -1,10 +1,16 @@
 #include "toolframewindow.h"
 #include "toolframewindow_p.h"
 #include "qtwin.h"
+#include <QLibrary>
+
+typedef HRESULT (WINAPI * DwmDefWindowProc_t)(HWND, UINT, WPARAM, LPARAM, long*);
+DwmDefWindowProc_t pDwmDefWindowProc = 0;
 
 ToolFrameWindow::ToolFrameWindow() :
 	d_ptr(new ToolFrameWindowPrivate(this))
 {
+	QLibrary dwmapi("dwmapi");
+	pDwmDefWindowProc             = reinterpret_cast<DwmDefWindowProc_t>(dwmapi.resolve("DwmDefWindowProc"));
 	Q_D(ToolFrameWindow);
 	d->loadThemeParams();
 
@@ -14,7 +20,7 @@ ToolFrameWindow::ToolFrameWindow() :
 
 	QtWin::extendFrameIntoClientArea(this, d->verticalBorder,
 									 d->verticalBorder,
-									 d->captionHeight,
+									 d->captionHeight + d->horizontalBorder,
 									 d->horizontalBorder);
 }
 
@@ -52,8 +58,8 @@ bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 	//DwmIsCompositionEnabled(&compositionEnabled);
 	//if (!compositionEnabled)
 	//return false;
-	//if (DwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
-	//	return true;
+	if (pDwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
+		return true;
 	switch (msg->message)
 	{
 	case WM_SHOWWINDOW :
