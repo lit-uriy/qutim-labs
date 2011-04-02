@@ -4,6 +4,7 @@
 #include "toolframewindow.h"
 #include <QLabel>
 #include <QAction>
+#include <QTabBar>
 
 int main(int argc, char **argv)
 {
@@ -17,9 +18,13 @@ int main(int argc, char **argv)
 	action.setIcon(QIcon(":/applications-internet.png"));
 	QAction action2(&w);
 	action2.setIcon(QIcon(":/applications-multimedia.png"));
+	QTabBar bar;
+	bar.addTab(QObject::tr("My super tab"));
+	bar.addTab(QObject::tr("Another tab"));
 
 	w.addAction(&action);
 	w.addAction(&action2);
+	w.addWidget(&bar);
 	w.setCentralWidget(&form);
 	w.show();
 	return ap.exec();
