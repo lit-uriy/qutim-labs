@@ -67,10 +67,10 @@ void ToolFrameWindow::removeAction(QAction *action)
 	d->_q_do_layout();
 }
 
-void ToolFrameWindow::addWidget(QWidget *widget)
+void ToolFrameWindow::addWidget(QWidget *widget, Qt::Alignment aligment)
 {
 	Q_D(ToolFrameWindow);
-	d->hLayout->insertWidget(d->hLayout->count() - 1, widget, 0, Qt::AlignBottom);
+	d->hLayout->insertWidget(d->hLayout->count() - 1, widget, 0, aligment);
 	d->_q_do_layout();
 	connect(widget, SIGNAL(destroyed()), this, SLOT(_q_do_layout()));
 }

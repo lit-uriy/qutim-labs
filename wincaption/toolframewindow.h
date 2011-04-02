@@ -18,7 +18,7 @@ public:
 	virtual ~ToolFrameWindow();
 	void addAction(QAction *action);
 	void removeAction(QAction *action);
-	void addWidget(QWidget *widget);
+	void addWidget(QWidget *widget, Qt::Alignment = Qt::AlignTop);
 	void removeWidget(QWidget *widget);
 	void setCentralWidget(QWidget *widget);
 	void setIconSize(const QSize &size);

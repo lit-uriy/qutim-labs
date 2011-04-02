@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QAction>
 #include <QTabBar>
+#include <QPushButton>
 
 int main(int argc, char **argv)
 {
@@ -24,12 +25,15 @@ int main(int argc, char **argv)
 	bar.setTabsClosable(true);
 	bar.setMovable(true);
 
+	QPushButton btn(QObject::tr("Push me"));
+
 	w.addAction(&action);
 	w.addAction(&action2);
-	w.addWidget(&bar);
+	w.addWidget(&bar, Qt::AlignBottom);
+	w.addWidget(&btn);
 	w.setCentralWidget(&form);
 
-	w.setIconSize(QSize(32,32));
+	w.setIconSize(QSize(22,22));
 
 	w.show();
 	w.resize(600,400);
