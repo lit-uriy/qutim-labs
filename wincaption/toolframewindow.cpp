@@ -1,12 +1,12 @@
-#include "toolframewindow.h"
 #include "toolframewindow_p.h"
 #include <QLibrary>
 #include <QStyle>
+#include <QFrame>
 
 typedef HRESULT (WINAPI * DwmDefWindowProc_t)(HWND, UINT, WPARAM, LPARAM, long*);
 DwmDefWindowProc_t dwmDefWindowProc = 0;
 
-ToolFrameWindow::ToolFrameWindow() :
+ToolFrameWindow::ToolFrameWindow(int flags) :
 	d_ptr(new ToolFrameWindowPrivate(this))
 {
 	Q_D(ToolFrameWindow);
@@ -14,20 +14,18 @@ ToolFrameWindow::ToolFrameWindow() :
 		QLibrary dwmapi("dwmapi");
 		dwmDefWindowProc = reinterpret_cast<DwmDefWindowProc_t>(dwmapi.resolve("DwmDefWindowProc"));
 	}
+	d->flags = flags;
 	d->loadThemeParams();
 
 	int size = style()->pixelMetric(QStyle::PM_SmallIconSize);
 	d->iconSize = QSize(size, size);
 
-	//setAttribute(Qt::WA_TranslucentBackground);
-	//setAutoFillBackground(true);
-
-	//QtWin::extendFrameIntoClientArea(this);
 	d->vLayout = new QVBoxLayout(this);
 	d->hLayout = new QHBoxLayout();
 	d->vLayout->addLayout(d->hLayout);
 
-	d->hLayout->addSpacerItem(new QSpacerItem(10, d->captionHeight, QSizePolicy::Expanding, QSizePolicy::Fixed));
+	d->spacerItem = new QSpacerItem(0, d->captionHeight + d->verticalBorder, QSizePolicy::Expanding, QSizePolicy::Fixed);
+	d->hLayout->addSpacerItem(d->spacerItem);
 
 	d->vLayout->setContentsMargins(d->verticalBorder, 0, d->verticalBorder, d->horizontalBorder);
 	d->hLayout->setSpacing(0);
@@ -49,7 +47,7 @@ void ToolFrameWindow::addAction(QAction *action)
 	btn->setAutoRaise(true);
 	btn->setIconSize(d->iconSize);
 	d->buttonHash.insert(action, btn);
-	addWidget(btn);
+	addWidget(btn, Qt::AlignVCenter);
 }
 
 void ToolFrameWindow::removeWidget(QWidget *widget)
@@ -128,6 +126,24 @@ bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 	default:
 		return false;
 	}
+}
+
+QWidget *ToolFrameWindow::addSeparator()
+{
+	QFrame *frame = new QFrame(this);
+	frame->setLineWidth(1);
+	frame->setMinimumSize(d_func()->iconSize.width() / 2,
+						  d_func()->iconSize.height() * 0.75);
+	frame->setFrameShape(QFrame::VLine);
+	frame->setFrameShadow(QFrame::Plain);
+
+	QPalette palete = frame->palette();
+	palete.setColor(QPalette::WindowText,
+					palete.color(QPalette::Shadow));
+	frame->setPalette(palete);
+
+	addWidget(frame, Qt::AlignCenter);
+	return frame;
 }
 
 #include "moc_toolframewindow.cpp"

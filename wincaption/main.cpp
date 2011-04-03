@@ -6,13 +6,15 @@
 #include <QAction>
 #include <QTabBar>
 #include <QPushButton>
+#include "qtwin.h"
 
 int main(int argc, char **argv)
 {
 	QApplication ap(argc, argv);
 	//Form f;
 	//f.show();
-	ToolFrameWindow w;
+	ToolFrameWindow w;//(ToolFrameWindow::DisableExtendFrame);
+	//QtWin::extendFrameIntoClientArea(&w, true);
 	Form form;
 
 	QAction action(&w);
@@ -25,15 +27,23 @@ int main(int argc, char **argv)
 	bar.setTabsClosable(true);
 	bar.setMovable(true);
 
-	QPushButton btn(QObject::tr("Push me"));
+	QPushButton btn;
+	btn.setIcon(QIcon(":/ubuntu.png"));
+	btn.setStyleSheet("QPushButton { "
+					  "border: 5px;"
+					  "border-image: url(:/button.png);"
+					  "}");
+	btn.setMinimumSize(64, 22);
+	btn.setMaximumSize(64, 22);
 
+	w.addWidget(&btn);
 	w.addAction(&action);
+	w.addSeparator();
 	w.addAction(&action2);
 	w.addWidget(&bar, Qt::AlignBottom);
-	w.addWidget(&btn);
 	w.setCentralWidget(&form);
 
-	w.setIconSize(QSize(22,22));
+	//w.setIconSize(QSize(32,32));
 
 	w.show();
 	w.resize(600,400);

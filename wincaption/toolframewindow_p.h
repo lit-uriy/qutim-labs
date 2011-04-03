@@ -1,5 +1,6 @@
 #ifndef TOOLFRAMEWINDOW_P_H
 #define TOOLFRAMEWINDOW_P_H
+#include "toolframewindow.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <qt_windows.h>
@@ -8,6 +9,17 @@
 #include <QHash>
 #include <QToolButton>
 #include <QTimer>
+
+//class CaptionWidget : public QWidget
+//{
+//	Q_OBJECT
+//public:
+//	QWidget(QWidget *parent = 0) : QWidget(parent)
+//	{
+
+//	}
+
+//};
 
 class QAction;
 class ToolFrameWindow;
@@ -74,11 +86,13 @@ public:
 	}
 	void _q_do_layout()
 	{
-		int height = qMax(captionHeight, hLayout->sizeHint().height());
-		QtWin::extendFrameIntoClientArea(q_func(), verticalBorder,
-										 verticalBorder,
-										 height,
-										 horizontalBorder);
+		if (!(flags & ToolFrameWindow::DisableExtendFrame)) {
+			int height = qMax(captionHeight, hLayout->sizeHint().height());
+			QtWin::extendFrameIntoClientArea(q_func(), verticalBorder,
+											 verticalBorder,
+											 height,
+											 horizontalBorder);
+		}
 	}
 
 	ToolFrameWindow *q_ptr;
@@ -88,8 +102,10 @@ public:
 	int captionHeight;
 	QVBoxLayout *vLayout;
 	QHBoxLayout *hLayout;
+	QSpacerItem *spacerItem;
 	QSize iconSize;
 	QHash<QAction*, QToolButton*> buttonHash;
+	int flags;
 };
 
 
