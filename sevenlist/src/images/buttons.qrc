@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/sevenlist">
+        <file>redbutton.png</file>
+    </qresource>
+</RCC>

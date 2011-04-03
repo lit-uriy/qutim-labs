@@ -1,7 +1,5 @@
 #include "Form.h"
 #include "ui_Form.h"
-#include <qt_windows.h>
-#include <qtwin.h>
 #include <QToolButton>
 
 Form::Form(QWidget *parent) :

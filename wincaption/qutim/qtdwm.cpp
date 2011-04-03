@@ -25,6 +25,9 @@
 #define DWM_BB_TRANSITIONONMAXIMIZED  0x00000004  // fTransitionOnMaximized has been specified
 #define WM_DWMCOMPOSITIONCHANGED        0x031E    // Composition changed window message
 
+namespace qutim_sdk_0_3
+{
+
 typedef struct _DWM_BLURBEHIND
 {
 	DWORD dwFlags;
@@ -287,4 +290,6 @@ QColor QtDWM::colorizatinColor()
 	}
 #endif
 	return resultColor;
+}
+
 }

@@ -13,6 +13,9 @@
 #include <QWidget>
 #include <QMap>
 
+namespace qutim_sdk_0_3
+{
+
 class BlurManager;
 typedef QMap<QWidget *, BlurManager*> WidgetsMap;
 
@@ -35,5 +38,7 @@ public slots:
 private:
 	WidgetsMap widgets;
 };
+
+}
 
 #endif // QTDWM_P_H

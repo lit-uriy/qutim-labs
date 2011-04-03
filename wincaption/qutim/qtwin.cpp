@@ -2,6 +2,8 @@
 #include "qtdwm.h"
 #include <QColor>
 
+namespace qutim_sdk_0_3
+{
 
 namespace QtWin {
 
@@ -27,3 +29,4 @@ bool extendFrameIntoClientArea ( QWidget* widget, int left, int top, int right, 
 
 }
 
+}

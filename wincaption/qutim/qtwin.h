@@ -17,9 +17,12 @@
 #ifndef QUTIMWIN_H
 #define QUTIMWIN_H
 
+
 class QColor;
 class QWidget;
 
+namespace qutim_sdk_0_3
+{
 /**
  * @brief This is a helper namespace for using the Desktop Window Manager
  * functionality on Windows 7 and Windows Vista. On other platforms
@@ -68,5 +71,6 @@ bool isCompositionEnabled();
 QColor colorizatinColor();
 }
 
+}
 
 #endif // QUTIMWIN_H

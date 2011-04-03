@@ -13,6 +13,9 @@
 #include <QColor>
 #include <QWidget>
 
+namespace qutim_sdk_0_3
+{
+
 /**
   * This is a helper class for using the Desktop Window Manager
   * functionality on Windows 7 and Windows Vista. On other platforms
@@ -34,5 +37,7 @@ public:
 private:
     static WindowNotifier *windowNotifier();
 };
+
+}
 
 #endif // QTWIN_H

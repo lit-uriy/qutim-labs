@@ -1,3 +1,18 @@
+/****************************************************************************
+ *  toolframewindow.cpp
+ *
+ *  Copyright (c) 2011 by Sidorov Aleksey <sauron@citadelspb.com>
+ *  Copyright (c) 2011 by Vizir Ivan <define-true-false@yandex.com >
+ *
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************
+*****************************************************************************/
 #include "toolframewindow_p.h"
 #include <QLibrary>
 #include <QStyle>
@@ -27,6 +42,8 @@ ToolFrameWindow::ToolFrameWindow(int flags) :
 	d->spacerItem = new QSpacerItem(0, d->captionHeight + d->verticalBorder, QSizePolicy::Expanding, QSizePolicy::Fixed);
 	d->hLayout->addSpacerItem(d->spacerItem);
 
+	addSpace(110); //FIXME find this size
+
 	d->vLayout->setContentsMargins(d->verticalBorder, 0, d->verticalBorder, d->horizontalBorder);
 	d->hLayout->setSpacing(0);
 	d->vLayout->setSpacing(0);
@@ -42,12 +59,7 @@ void ToolFrameWindow::addAction(QAction *action)
 {
 	Q_D(ToolFrameWindow);
 	QWidget::addAction(action);
-	QToolButton *btn = new QToolButton(this);
-	btn->setDefaultAction(action);
-	btn->setAutoRaise(true);
-	btn->setIconSize(d->iconSize);
-	d->buttonHash.insert(action, btn);
-	addWidget(btn, Qt::AlignVCenter);
+	addWidget(d->createButton(action), Qt::AlignVCenter);
 }
 
 void ToolFrameWindow::removeWidget(QWidget *widget)
@@ -68,7 +80,7 @@ void ToolFrameWindow::removeAction(QAction *action)
 void ToolFrameWindow::addWidget(QWidget *widget, Qt::Alignment aligment)
 {
 	Q_D(ToolFrameWindow);
-	d->hLayout->insertWidget(d->hLayout->count() - 1, widget, 0, aligment);
+	d->hLayout->insertWidget(d->hLayout->count() - 2, widget, 0, aligment);
 	d->_q_do_layout();
 	connect(widget, SIGNAL(destroyed()), this, SLOT(_q_do_layout()));
 }
@@ -81,6 +93,8 @@ void ToolFrameWindow::setCentralWidget(QWidget *widget)
 	d->centralWidget = widget;
 	d->centralWidget->winId();
 	layout()->addWidget(widget);
+	setGeometry(widget->geometry());
+	d->centralWidget->setAutoFillBackground(true);
 	d->_q_do_layout();
 }
 
@@ -146,4 +160,25 @@ QWidget *ToolFrameWindow::addSeparator()
 	return frame;
 }
 
-#include "moc_toolframewindow.cpp"
+void ToolFrameWindow::insertAction(QAction *before, QAction *action)
+{
+	Q_D(ToolFrameWindow);
+	QToolButton *btn = d->buttonHash.value(before);
+	int index = d->hLayout->indexOf(btn);
+	d->hLayout->insertWidget(index, d->createButton(action), 0, Qt::AlignVCenter);
+}
+
+QWidget *ToolFrameWindow::addSpace(int size)
+{
+	QWidget *spacer = new QWidget(this);
+	spacer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	spacer->setMinimumSize(size, 0);
+	spacer->setMaximumWidth(size);
+	spacer->setAttribute(Qt::WA_TransparentForMouseEvents);
+	addWidget(spacer);
+	return spacer;
+}
+
+#include "moc_toolframewindow.cpp" //for qmake users
+//#include "toolframewindow.moc" //for cmake users
+

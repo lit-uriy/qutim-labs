@@ -4,5 +4,6 @@
         <file>applications-internet.png</file>
         <file>applications-multimedia.png</file>
         <file>ubuntu.png</file>
+        <file>background.png</file>
     </qresource>
 </RCC>
