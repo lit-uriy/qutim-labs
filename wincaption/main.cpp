@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	btn.setMinimumSize(64, 22);
 	btn.setMaximumSize(64, 22);
 
-	QLabel lbl(QObject::tr("Glow caption. Text with glow"));
+	QLabel lbl(QObject::tr("Glow caption."));
 	lbl.setStyleSheet("QLabel {border-image: url(:/background.png);border: 5px; }");
 	lbl.setAttribute(Qt::WA_TransparentForMouseEvents);
 

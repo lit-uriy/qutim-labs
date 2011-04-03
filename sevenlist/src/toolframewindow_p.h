@@ -25,6 +25,7 @@
 #include <QHash>
 #include <QToolButton>
 #include <QTimer>
+#include "framebutton.h"
 
 //class CaptionWidget : public QWidget
 //{
@@ -124,6 +125,8 @@ public:
 
 	ToolFrameWindow *q_ptr;
 	QPointer<QWidget> centralWidget;
+	QPointer<QMenu> menu;
+	QPointer<FrameButton> frameButton;
 	int horizontalBorder;
 	int verticalBorder;
 	int captionHeight;

@@ -24,6 +24,7 @@
 #include <QTimer>
 #include "toolframewindow.h"
 #include <QToolButton>
+#include <QMenuBar>
 
 namespace Core {
 namespace SimpleContactList {
@@ -47,7 +48,7 @@ static bool isStatusChange(const qutim_sdk_0_3::Status &status)
 SimpleWidget::SimpleWidget()
 {
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
-	setWindowIcon(Icon("qutim"));
+	setWindowIcon(Icon("show-menu"));
 
 	resize(150,0);//hack
 	setAttribute(Qt::WA_AlwaysShowToolTips);
@@ -295,20 +296,8 @@ bool SimpleWidget::event(QEvent *event)
 void SimpleWidget::init()
 {	
 	MenuController *controller = ServiceManager::getByName<MenuController*>("ContactList");
-	QPushButton *menuBtn = new QPushButton(this);
-	menuBtn->setMenu(controller->menu());
-	menuBtn->setIcon(Icon("show-menu"));
-	menuBtn->setMaximumHeight(20);
-	//menuBtn->setMinimumWidth(50);
-	//menuBtn->setText(tr("qutIM"));
-
-	menuBtn->setStyleSheet(("QPushButton { "
-							"border: 3px;"
-							"border-image: url(:/sevenlist/redbutton.png);"
-							"}"));
-
-	m_toolFrameWindow->addWidget(menuBtn, Qt::AlignTop);
-	m_toolFrameWindow->addSeparator();
+	m_toolFrameWindow->setMenu(controller->menu());
+	m_toolFrameWindow->addSpace(6);
 	SystemIntegration::show(m_toolFrameWindow);
 }
 

@@ -17,6 +17,9 @@
 #include <QLibrary>
 #include <QStyle>
 #include <QFrame>
+#include <QAction>
+#include <QShowEvent>
+#include <QMenu>
 
 typedef HRESULT (WINAPI * DwmDefWindowProc_t)(HWND, UINT, WPARAM, LPARAM, long*);
 DwmDefWindowProc_t dwmDefWindowProc = 0;
@@ -42,7 +45,7 @@ ToolFrameWindow::ToolFrameWindow(int flags) :
 	d->spacerItem = new QSpacerItem(0, d->captionHeight + d->verticalBorder, QSizePolicy::Expanding, QSizePolicy::Fixed);
 	d->hLayout->addSpacerItem(d->spacerItem);
 
-	addSpace(110); //FIXME find this size
+	addSpace(50); //FIXME find this size
 
 	d->vLayout->setContentsMargins(d->verticalBorder, 0, d->verticalBorder, d->horizontalBorder);
 	d->hLayout->setSpacing(0);
@@ -59,7 +62,10 @@ void ToolFrameWindow::addAction(QAction *action)
 {
 	Q_D(ToolFrameWindow);
 	QWidget::addAction(action);
-	addWidget(d->createButton(action), Qt::AlignVCenter);
+	if (action->isSeparator())
+		addSeparator();
+	else
+		addWidget(d->createButton(action), Qt::AlignVCenter);
 }
 
 void ToolFrameWindow::removeWidget(QWidget *widget)
@@ -88,13 +94,20 @@ void ToolFrameWindow::addWidget(QWidget *widget, Qt::Alignment aligment)
 void ToolFrameWindow::setCentralWidget(QWidget *widget)
 {
 	Q_D(ToolFrameWindow);
-	if (d->centralWidget)
+	if (d->centralWidget) {
 		layout()->removeWidget(d->centralWidget);
+		d->centralWidget->removeEventFilter(this);
+		foreach (QAction *action, actions())
+			removeAction(action);
+	}
 	d->centralWidget = widget;
 	d->centralWidget->winId();
 	layout()->addWidget(widget);
 	setGeometry(widget->geometry());
 	d->centralWidget->setAutoFillBackground(true);
+	if (d->flags & MergeWidgetActions)
+		addActions(widget->actions());
+
 	d->_q_do_layout();
 }
 
@@ -179,6 +192,44 @@ QWidget *ToolFrameWindow::addSpace(int size)
 	return spacer;
 }
 
-#include "moc_toolframewindow.cpp" //for qmake users
-//#include "toolframewindow.moc" //for cmake users
+bool ToolFrameWindow::eventFilter(QObject *o, QEvent *e)
+{
+	return QWidget::eventFilter(o, e);
+}
+
+void ToolFrameWindow::setMenu(QMenu *menu)
+{
+	Q_D(ToolFrameWindow);
+	if (d->menu)
+		d->menu->deleteLater();
+	if (!menu) {
+		d->frameButton->deleteLater();
+		return;
+	}
+
+	QIcon icon = menu->icon();
+	if (icon.isNull() && d->centralWidget)
+		icon = d->centralWidget->windowIcon();
+	else
+		icon = windowIcon();
+
+	if(!d->frameButton) {
+		d->frameButton = new FrameButton(this);
+		d->hLayout->insertWidget(0, d->frameButton, 0, Qt::AlignTop);
+	}
+
+	d->frameButton->setMenu(menu);
+	d->frameButton->setIcon(icon);
+	if (0)
+		d->frameButton->setText(menu->title());
+	d->menu = menu;
+}
+
+QMenu *ToolFrameWindow::menu() const
+{
+	return d_func()->menu;
+}
+
+//#include "moc_toolframewindow.cpp" //for qmake users
+#include "toolframewindow.moc" //for cmake users
 

@@ -19,7 +19,7 @@
 
 #include <QWidget>
 
-
+class QMenu;
 class ToolFrameWindowPrivate;
 class ToolFrameWindow : public QWidget
 {
@@ -28,9 +28,10 @@ class ToolFrameWindow : public QWidget
 public:
 	enum Flags
 	{
-		DisableExtendFrame = 0x1, //for manual control
+		DisableExtendFrame =	0x1, /*! For manual control */
+		MergeWidgetActions =	0x2, /*! Take QWidget::actions from centralWidget */
 	};
-	explicit ToolFrameWindow(int flags = 0);
+	explicit ToolFrameWindow(int flags = MergeWidgetActions);
 	virtual ~ToolFrameWindow();
 	void addAction(QAction *action);
 	QWidget *addSeparator();
@@ -41,10 +42,15 @@ public:
 	void removeAction(QAction *action);
 	void removeWidget(QWidget *widget);
 	void setCentralWidget(QWidget *widget);
+	/*! Draw in caption nice vista style button with popup menu
+	  */
+	void setMenu(QMenu *menu);
+	QMenu *menu() const;
 	void setIconSize(const QSize &size);
 	QSize iconSize() const;
 protected:
 	bool winEvent(MSG *message, long *result);
+	bool eventFilter(QObject *o, QEvent *e);
 private:
 	QScopedPointer<ToolFrameWindowPrivate> d_ptr;
 	Q_PRIVATE_SLOT(d_func(), void _q_do_layout())
