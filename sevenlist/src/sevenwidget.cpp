@@ -47,15 +47,12 @@ static bool isStatusChange(const qutim_sdk_0_3::Status &status)
 
 SimpleWidget::SimpleWidget()
 {
-	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(save()));
 	setWindowIcon(Icon("show-menu"));
 
 	resize(150,0);//hack
 	setAttribute(Qt::WA_AlwaysShowToolTips);
 	loadGeometry();
-
-	QWidget *w = new QWidget(this);
-	setCentralWidget(w);
 
 	m_toolFrameWindow = new ToolFrameWindow(ToolFrameWindow::DisableExtendFrame);
 
@@ -65,7 +62,7 @@ SimpleWidget::SimpleWidget()
 
 	m_controller = new MenuController(this);
 
-	QVBoxLayout *layout = new QVBoxLayout(w);
+	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->setMargin(0);
 	layout->setSpacing(0);
 
@@ -80,11 +77,16 @@ SimpleWidget::SimpleWidget()
 
 	m_searchBar = new QLineEdit(this);
 
+	// make shortcuts
+	Shortcut *key = new Shortcut("find", m_searchBar);
+	key->setContext(Qt::ApplicationShortcut);
+	connect(key, SIGNAL(activated()), m_searchBar, SLOT(setFocus()));
+
 	m_statusBtn = new QPushButton(Icon("im-user-online"),
 								   tr("Status"),
 								   this);
 	m_statusBtn->setMenu(statusMenu);
-	Shortcut *key = new Shortcut("contactListGlobalStatus", m_statusBtn);
+	key = new Shortcut("contactListGlobalStatus", m_statusBtn);
 	connect(key,SIGNAL(activated()), m_statusBtn, SLOT(showMenu()));
 	m_statusBtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -129,11 +131,17 @@ SimpleWidget::SimpleWidget()
 	QTimer::singleShot(0, this, SLOT(init()));
 }
 
-SimpleWidget::~SimpleWidget()
+void SimpleWidget::save()
 {
 	Config config;
 	config.beginGroup("contactList");
 	config.setValue("geometry", saveGeometry());
+	config.sync();
+}
+
+SimpleWidget::~SimpleWidget()
+{
+	save();
 }
 
 void SimpleWidget::addButton(ActionGenerator *generator)
@@ -290,7 +298,7 @@ bool SimpleWidget::event(QEvent *event)
 		m_status_action->setText(tr("Set Status Text"));
 		event->accept();
 	}
-	return QMainWindow::event(event);
+	return QWidget::event(event);
 }
 
 void SimpleWidget::init()

@@ -18,7 +18,7 @@ class QAction;
 namespace Core {
 namespace SimpleContactList {
 
-class SimpleWidget : public QMainWindow, public AbstractContactListWidget
+class SimpleWidget : public QWidget, public AbstractContactListWidget
 {
 	Q_OBJECT
 	Q_INTERFACES(Core::SimpleContactList::AbstractContactListWidget)
@@ -45,6 +45,7 @@ private slots:
 	void showStatusDialog();
 	void changeStatusTextAccepted();
 	void orientationChanged();
+	void save();
 private:
 	TreeView *m_view;
 	AbstractContactModel *m_model;

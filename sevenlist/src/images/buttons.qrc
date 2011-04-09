@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/sevenlist">
         <file>redbutton.png</file>
+        <file>button.png</file>
+        <file>button-hover.png</file>
+        <file>button-pressed.png</file>
+        <file>pushbutton.css</file>
     </qresource>
 </RCC>
