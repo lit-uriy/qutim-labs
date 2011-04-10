@@ -26,7 +26,7 @@ FrameButton::FrameButton(QWidget *parent) :
 		setStyleSheet(file.readAll());
 
 	setMaximumHeight(22);
-	setMinimumSize(45, 22);
+	setMinimumSize(50, 22);
 
 	//setStyleSheet(("QPushButton { "
 	//			   "border: 3px;"

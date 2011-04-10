@@ -5,5 +5,7 @@
         <file>button-hover.png</file>
         <file>button-pressed.png</file>
         <file>pushbutton.css</file>
+        <file>menu-indicator.png</file>
+        <file>button-inactive.png</file>
     </qresource>
 </RCC>
