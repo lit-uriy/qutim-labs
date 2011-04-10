@@ -85,12 +85,14 @@ SimpleWidget::SimpleWidget()
 	m_statusBtn = new QPushButton(Icon("im-user-online"),
 								   tr("Status"),
 								   this);
+
 	m_statusBtn->setMenu(statusMenu);
 	key = new Shortcut("contactListGlobalStatus", m_statusBtn);
 	connect(key,SIGNAL(activated()), m_statusBtn, SLOT(showMenu()));
 	m_statusBtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
 	m_searchBar->setPlaceholderText(tr("Search contact"));
+	m_searchBar->setContentsMargins(0, 3, 0, 3);
 
 	layout->addWidget(m_searchBar);
 	layout->addWidget(m_statusBtn);

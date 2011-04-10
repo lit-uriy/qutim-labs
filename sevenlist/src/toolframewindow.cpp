@@ -104,7 +104,7 @@ void ToolFrameWindow::setCentralWidget(QWidget *widget)
 	d->centralWidget->winId();
 	layout()->addWidget(widget);
 	setGeometry(widget->geometry());
-	d->centralWidget->setAutoFillBackground(true);
+	d->centralWidget->setAutoFillBackground(false);
 	if (d->flags & MergeWidgetActions)
 		addActions(widget->actions());
 
