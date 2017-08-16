@@ -49,6 +49,7 @@ public:
 	void setIconSize(const QSize &size);
 	QSize iconSize() const;
 protected:
+    // FIXME: Для Qt5.x смотри QWidget::nativeEvent()
 	bool winEvent(MSG *message, long *result);
 	bool eventFilter(QObject *o, QEvent *e);
 private:

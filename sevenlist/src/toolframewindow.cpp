@@ -123,12 +123,13 @@ QSize ToolFrameWindow::iconSize() const
 	return d_func()->iconSize;
 }
 
+// FIXME: Для Qt5.x смотри QWidget::nativeEvent()
 bool ToolFrameWindow::winEvent(MSG *msg, long *result)
 {
 	//return QWidget::winEvent(msg, result); //Viv почему кнопки не жмакаются?
 	Q_D(ToolFrameWindow);
 	if (!QtWin::isCompositionEnabled())
-		return QWidget::winEvent(msg, result);
+        return QWidget::winEvent(msg, result); // FIXME: Для Qt5.x смотри QWidget::nativeEvent()
 
 	if (dwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, result))
 		return true;
