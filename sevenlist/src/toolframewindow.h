@@ -24,7 +24,7 @@ class ToolFrameWindowPrivate;
 class ToolFrameWindow : public QWidget
 {
 	Q_OBJECT
-	Q_DECLARE_PRIVATE(ToolFrameWindow);
+    Q_DECLARE_PRIVATE(ToolFrameWindow)
 public:
 	enum Flags
 	{
