@@ -230,6 +230,6 @@ QMenu *ToolFrameWindow::menu() const
 	return d_func()->menu;
 }
 
-//#include "moc_toolframewindow.cpp" //for qmake users
-#include "toolframewindow.moc" //for cmake users
+#include "moc_toolframewindow.cpp" //for qmake users
+//#include "toolframewindow.moc" //for cmake users
 
